@@ -11,7 +11,7 @@ LEONARDO_OPTGROUP = 'EpicEditor'
 LEONARDO_PUBLIC = True
 
 LEONARDO_CONFIG = {
-    'LEONARDO_EPICEDITOR_PUBLIC': (False, 'Make epiceditor view accessible without login.'),
+    'LEONARDO_EPICEDITOR_PUBLIC': (False, 'Make epiceditor view accessible without login.')
 }
 
 
