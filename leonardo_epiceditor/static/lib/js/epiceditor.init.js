@@ -2,13 +2,13 @@
 **/
 jQuery(document).ready(function() {
 
-  loadResource(STATIC_URL + "lib/js/epiceditor.min.js")
-
   horizon.modals.addModalInitFunction(function (modal) {
 
     var $textarea = $('#id_text').closest("form").attr("action");
 
     if (typeof $textarea !== "undefined" && $textarea.indexOf('markuptext') > 0) {
+
+        loadResource(STATIC_URL + "lib/js/epiceditor.min.js");
 
         $(modal).find(":text, select, textarea").filter(":visible:first").focus().css({'display': 'none'}).wrap("<div id='epiceditor'></div>");
 

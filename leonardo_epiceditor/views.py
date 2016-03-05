@@ -7,6 +7,9 @@ from .utils import DEFAULT_MARKUP_TYPES
 
 class EpicEditorView(generic.TemplateView):
 
+    def get(self, *args, **kwargs):
+        return JsonResponse({})
+
     def post(self, *args, **kwargs):
 
         if 'text' in self.request.POST:
