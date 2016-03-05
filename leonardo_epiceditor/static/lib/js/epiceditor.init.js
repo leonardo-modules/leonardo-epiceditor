@@ -8,91 +8,99 @@ jQuery(document).ready(function() {
 
     if (typeof $textarea !== "undefined" && $textarea.indexOf('markuptext') > 0) {
 
-        loadResource(STATIC_URL + "lib/js/epiceditor.min.js");
+        (function (){
 
-        $(modal).find(":text, select, textarea").filter(":visible:first").focus().css({'display': 'none'}).wrap("<div id='epiceditor'></div>");
+          var initFn = function () {
 
-        var markdown_type = $("#id_text_markup_type").val();
+            $(modal).find(":text, select, textarea").filter(":visible:first").focus().css({'display': 'none'}).wrap("<div id='epiceditor'></div>");
 
-        $("#id_text_markup_type").on("change", function (e) {
-            markdown_type = $(this).val();
-        });
+            var markdown_type = $("#id_text_markup_type").val();
 
-        $(modal).find('textarea').each(function(index) {
-            var opts = {
-              textarea: 'id_text',
-              basePath: STATIC_URL + 'lib',
-              clientSideStorage: true,
-              localStorageName: 'epiceditor',
-              useNativeFullscreen: true,
-              parser: function (str) {
-                if (str !== "TEST") {
+            $("#id_text_markup_type").on("change", function (e) {
+                markdown_type = $(this).val();
+            });
 
-                    if (markdown_type === "restructuredtext" || markdown_type === "markdown") {
+            $(modal).find('textarea').each(function(index) {
+                var opts = {
+                  textarea: 'id_text',
+                  basePath: STATIC_URL + 'lib',
+                  clientSideStorage: true,
+                  localStorageName: 'epiceditor',
+                  useNativeFullscreen: true,
+                  parser: function (str) {
+                    if (str !== "TEST") {
 
-                        var response = $.ajax({
-                          url: "/epiceditor/",
-                          method: 'POST',
-                          data: {
-                            text: str,
-                            type: markdown_type
-                          },
-                          async: false,
-                          success: function( data ) {
-                            if (data.hasOwnProperty('text')) {
-                                return data.text;
+                        if (markdown_type === "restructuredtext" || markdown_type === "markdown") {
+
+                            var response = $.ajax({
+                              url: "/epiceditor/",
+                              method: 'POST',
+                              data: {
+                                text: str,
+                                type: markdown_type
+                              },
+                              async: false,
+                              success: function( data ) {
+                                if (data.hasOwnProperty('text')) {
+                                    return data.text;
+                                } else {
+                                    return str;
+                                }
+
+                              }
+                              });
+                            if (response.hasOwnProperty('responseJSON') && response.responseJSON.hasOwnProperty('text')) {
+                                return response.responseJSON.text
                             } else {
-                                return str;
+                                return str
                             }
 
-                          }
-                          });
-                        if (response.hasOwnProperty('responseJSON') && response.responseJSON.hasOwnProperty('text')) {
-                            return response.responseJSON.text
-                        } else {
+                        } else if (markdown_type === "html") {
+                            return str
+                        } else if (markdown_type === "plain") {
                             return str
                         }
 
-                    } else if (markdown_type === "html") {
-                        return str
-                    } else if (markdown_type === "plain") {
-                        return str
-                    }
+                  } else {return str}
 
-              } else {return str}
+                  },
+                  file: {
+                    name: 'epiceditor',
+                    defaultContent: '',
+                    autoSave: 100
+                  },
+                  theme: {
+                    base: '/themes/base/epiceditor.css',
+                    preview: '/themes/preview/preview-dark.css',
+                    editor: '/themes/editor/epic-dark.css'
+                  },
+                  button: {
+                    preview: true,
+                    fullscreen: true,
+                    bar: "auto"
+                  },
+                  focusOnLoad: false,
+                  shortcut: {
+                    modifier: 18,
+                    fullscreen: 70,
+                    preview: 80
+                  },
+                  string: {
+                    togglePreview: 'Toggle Preview Mode',
+                    toggleEdit: 'Toggle Edit Mode',
+                    toggleFullscreen: 'Enter Fullscreen'
+                  },
+                  autogrow: false
+                }
+                
+                var editor = new EpicEditor(opts).load();
+            });
+          }
 
-              },
-              file: {
-                name: 'epiceditor',
-                defaultContent: '',
-                autoSave: 100
-              },
-              theme: {
-                base: '/themes/base/epiceditor.css',
-                preview: '/themes/preview/preview-dark.css',
-                editor: '/themes/editor/epic-dark.css'
-              },
-              button: {
-                preview: true,
-                fullscreen: true,
-                bar: "auto"
-              },
-              focusOnLoad: false,
-              shortcut: {
-                modifier: 18,
-                fullscreen: 70,
-                preview: 80
-              },
-              string: {
-                togglePreview: 'Toggle Preview Mode',
-                toggleEdit: 'Toggle Edit Mode',
-                toggleFullscreen: 'Enter Fullscreen'
-              },
-              autogrow: false
-            }
-            
-            var editor = new EpicEditor(opts).load();
-        });
+          loadResource({src: STATIC_URL + "lib/js/epiceditor.min.js", callback: initFn});
+
+        }());
+
     }
   });
 });

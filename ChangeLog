@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Support public editor
 * Fix loading js and view get
 
 0.0.4
